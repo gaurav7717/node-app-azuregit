@@ -6,6 +6,10 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -21,26 +25,23 @@ jobs:
         with:
           node-version: '18.x' # Ensure compatibility with Azure App Service
 
-      # Step 3: Increase Node.js memory
-      - name: Increase Node.js memory
-        run: export NODE_OPTIONS=--max-old-space-size=4096
-
-      # Step 4: Install dependencies and build
+      # Step 3: Install dependencies and build
       - name: Install dependencies and build
         run: |
           npm install
           npm run build --if-present
           npm test --if-present
 
-      # Step 5: Login to Azure
+      # Step 4: Login to Azure
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{secrets.AZUREAPPSERVICE_CLIENTID_1EC844949FAC4BE5B9C36C0D7217806E}}
-          tenant-id: ${{secrets.AZUREAPPSERVICE_TENANTID_4C13E3BBF1284A3F80C3552E58A03ACA}}
-          subscription-id: ${{secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_75B930EB13B3458CAA2881706386751B}}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          auth-type: 'spn' # Service Principal Authentication
 
-      # Step 6: Deploy to Azure Web App
+      # Step 5: Deploy to Azure Web App
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
