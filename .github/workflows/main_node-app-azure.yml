@@ -20,7 +20,7 @@ jobs:
       - name: Zip the project
         run: |
           npm install --production
-          zip -r release.zip . -x "node_modules/*" -x "*/node_modules/*"
+          zip -r release.zip . -x "node_modules/*"
           
       - name: Set up Node.js version
         uses: actions/setup-node@v3
